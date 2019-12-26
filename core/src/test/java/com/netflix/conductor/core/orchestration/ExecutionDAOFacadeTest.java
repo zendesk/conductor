@@ -24,7 +24,8 @@ import com.netflix.conductor.core.execution.TestConfiguration;
 import com.netflix.conductor.core.execution.TestDeciderService;
 import com.netflix.conductor.dao.ExecutionDAO;
 import com.netflix.conductor.dao.IndexDAO;
-import com.netflix.conductor.dao.RateLimitingDao;
+import com.netflix.conductor.dao.PollDataDAO;
+import com.netflix.conductor.dao.RateLimitingDAO;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -53,16 +54,18 @@ public class ExecutionDAOFacadeTest {
     private IndexDAO indexDAO;
     private ObjectMapper objectMapper;
     private ExecutionDAOFacade executionDAOFacade;
-    private RateLimitingDao rateLimitingDao;
+    private RateLimitingDAO rateLimitingDao;
+    private PollDataDAO pollDataDAO;
 
     @Before
     public void setUp() {
         executionDAO = mock(ExecutionDAO.class);
         indexDAO = mock(IndexDAO.class);
-        rateLimitingDao = mock(RateLimitingDao.class);
+        rateLimitingDao = mock(RateLimitingDAO.class);
+        pollDataDAO = mock(PollDataDAO.class);
         objectMapper = new JsonMapperProvider().get();
         Configuration configuration = new TestConfiguration();
-        executionDAOFacade = new ExecutionDAOFacade(executionDAO, indexDAO, rateLimitingDao, objectMapper, configuration);
+        executionDAOFacade = new ExecutionDAOFacade(executionDAO, indexDAO, rateLimitingDao, pollDataDAO, objectMapper, configuration);
     }
 
     @Test

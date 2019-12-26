@@ -26,7 +26,8 @@ import com.netflix.conductor.core.execution.ApplicationException;
 import com.netflix.conductor.core.execution.ApplicationException.Code;
 import com.netflix.conductor.dao.ExecutionDAO;
 import com.netflix.conductor.dao.IndexDAO;
-import com.netflix.conductor.dao.RateLimitingDao;
+import com.netflix.conductor.dao.PollDataDAO;
+import com.netflix.conductor.dao.RateLimitingDAO;
 import com.netflix.conductor.metrics.Monitors;
 import java.io.IOException;
 import java.util.List;
@@ -41,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Service that acts as a facade for accessing execution data from the {@link ExecutionDAO}, {@link RateLimitingDao} and {@link IndexDAO} storage layers
+ * Service that acts as a facade for accessing execution data from the {@link ExecutionDAO}, {@link RateLimitingDAO} and {@link IndexDAO} storage layers
  */
 @Singleton
 public class ExecutionDAOFacade {
@@ -52,18 +53,20 @@ public class ExecutionDAOFacade {
 
     private final ExecutionDAO executionDAO;
     private final IndexDAO indexDAO;
-    private final RateLimitingDao rateLimitingDao;
+    private final RateLimitingDAO rateLimitingDao;
+    private final PollDataDAO pollDataDAO;
     private final ObjectMapper objectMapper;
     private final Configuration config;
 
     private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
 
     @Inject
-    public ExecutionDAOFacade(ExecutionDAO executionDAO, IndexDAO indexDAO, RateLimitingDao rateLimitingDao,
-                              ObjectMapper objectMapper, Configuration config) {
+    public ExecutionDAOFacade(ExecutionDAO executionDAO, IndexDAO indexDAO, RateLimitingDAO rateLimitingDao,
+                              PollDataDAO pollDataDAO, ObjectMapper objectMapper, Configuration config) {
         this.executionDAO = executionDAO;
         this.indexDAO = indexDAO;
         this.rateLimitingDao = rateLimitingDao;
+        this.pollDataDAO = pollDataDAO;
         this.objectMapper = objectMapper;
         this.config = config;
         this.scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(4,
@@ -348,15 +351,15 @@ public class ExecutionDAOFacade {
     }
 
     public List<PollData> getTaskPollData(String taskName) {
-        return executionDAO.getPollData(taskName);
+        return pollDataDAO.getPollData(taskName);
     }
 
     public PollData getTaskPollDataByDomain(String taskName, String domain) {
-        return executionDAO.getPollData(taskName, domain);
+        return pollDataDAO.getPollData(taskName, domain);
     }
 
     public void updateTaskLastPoll(String taskName, String domain, String workerId) {
-        executionDAO.updateLastPoll(taskName, domain, workerId);
+        pollDataDAO.updateLastPollData(taskName, domain, workerId);
     }
 
     /**

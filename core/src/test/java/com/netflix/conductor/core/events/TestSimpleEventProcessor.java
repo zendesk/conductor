@@ -134,7 +134,7 @@ public class TestSimpleEventProcessor {
 
         eventHandler.setEvent(event);
 
-        when(metadataService.getEventHandlers()).thenReturn(Collections.singletonList(eventHandler));
+        when(metadataService.getAllEventHandlers()).thenReturn(Collections.singletonList(eventHandler));
         when(metadataService.getEventHandlersForEvent(event, true)).thenReturn(Collections.singletonList(eventHandler));
         when(executionService.addEventExecution(any())).thenReturn(true);
         when(queue.rePublishIfNoAck()).thenReturn(false);
@@ -206,7 +206,7 @@ public class TestSimpleEventProcessor {
 
         eventHandler.setEvent(event);
 
-        when(metadataService.getEventHandlers()).thenReturn(Collections.singletonList(eventHandler));
+        when(metadataService.getAllEventHandlers()).thenReturn(Collections.singletonList(eventHandler));
         when(metadataService.getEventHandlersForEvent(event, true)).thenReturn(Collections.singletonList(eventHandler));
         when(executionService.addEventExecution(any())).thenReturn(true);
         when(queue.rePublishIfNoAck()).thenReturn(false);
@@ -248,7 +248,7 @@ public class TestSimpleEventProcessor {
         eventHandler.getActions().add(completeTaskAction);
 
         when(queue.rePublishIfNoAck()).thenReturn(false);
-        when(metadataService.getEventHandlers()).thenReturn(Collections.singletonList(eventHandler));
+        when(metadataService.getAllEventHandlers()).thenReturn(Collections.singletonList(eventHandler));
         when(metadataService.getEventHandlersForEvent(event, true)).thenReturn(Collections.singletonList(eventHandler));
         when(executionService.addEventExecution(any())).thenReturn(true);
         when(actionProcessor.execute(any(), any(), any(), any())).thenThrow(new ApplicationException(ApplicationException.Code.BACKEND_ERROR, "some retriable error"));
@@ -278,7 +278,7 @@ public class TestSimpleEventProcessor {
         completeTaskAction.getComplete_task().setOutput(new HashMap<>());
         eventHandler.getActions().add(completeTaskAction);
 
-        when(metadataService.getEventHandlers()).thenReturn(Collections.singletonList(eventHandler));
+        when(metadataService.getAllEventHandlers()).thenReturn(Collections.singletonList(eventHandler));
         when(metadataService.getEventHandlersForEvent(event, true)).thenReturn(Collections.singletonList(eventHandler));
         when(executionService.addEventExecution(any())).thenReturn(true);
 
