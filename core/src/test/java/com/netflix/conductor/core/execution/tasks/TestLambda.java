@@ -3,6 +3,7 @@ package com.netflix.conductor.core.execution.tasks;
 import com.netflix.conductor.common.metadata.tasks.Task;
 import com.netflix.conductor.common.run.Workflow;
 import com.netflix.conductor.core.execution.WorkflowExecutor;
+import com.netflix.conductor.core.scripting.ScriptEvaluatorUtils;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -22,7 +23,7 @@ public class TestLambda {
 
     @Test
     public void start() throws Exception {
-        Lambda lambda = new Lambda();
+        Lambda lambda = new Lambda(ScriptEvaluatorUtils.create());
 
         Map inputObj = new HashMap();
         inputObj.put("a",1);

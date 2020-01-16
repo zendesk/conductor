@@ -26,6 +26,7 @@ import com.netflix.conductor.core.config.Configuration;
 import com.netflix.conductor.core.events.queue.Message;
 import com.netflix.conductor.core.events.queue.ObservableQueue;
 import com.netflix.conductor.core.execution.ApplicationException;
+import com.netflix.conductor.core.scripting.ScriptEvaluator;
 import com.netflix.conductor.core.utils.JsonUtils;
 import com.netflix.conductor.metrics.Monitors;
 import com.netflix.conductor.service.ExecutionService;
@@ -65,6 +66,7 @@ public class SimpleEventProcessor implements EventProcessor {
     private final ExecutionService executionService;
     private final ActionProcessor actionProcessor;
     private final EventQueues eventQueues;
+    private final ScriptEvaluator scriptEvaluator;
 
     private ExecutorService executorService;
     private final Map<String, ObservableQueue> eventToQueueMap = new ConcurrentHashMap<>();
@@ -77,6 +79,7 @@ public class SimpleEventProcessor implements EventProcessor {
                                 MetadataService metadataService,
                                 ActionProcessor actionProcessor,
                                 EventQueues eventQueues,
+                                ScriptEvaluator scriptEvaluator,
                                 JsonUtils jsonUtils,
                                 Configuration configuration,
                                 ObjectMapper objectMapper) {
@@ -84,6 +87,7 @@ public class SimpleEventProcessor implements EventProcessor {
         this.metadataService = metadataService;
         this.actionProcessor = actionProcessor;
         this.eventQueues = eventQueues;
+        this.scriptEvaluator = scriptEvaluator;
         this.objectMapper = objectMapper;
         this.jsonUtils = jsonUtils;
 
@@ -187,7 +191,7 @@ public class SimpleEventProcessor implements EventProcessor {
             String condition = eventHandler.getCondition();
             if (StringUtils.isNotEmpty(condition)) {
                 logger.debug("Checking condition: {} for event: {}", condition, event);
-                Boolean success = ScriptEvaluator.evalBool(condition, jsonUtils.expand(payloadObject));
+                Boolean success = scriptEvaluator.evalBool(condition, jsonUtils.expand(payloadObject));
                 if (!success) {
                     String id = msg.getId() + "_" + 0;
                     EventExecution eventExecution = new EventExecution(id, msg.getId());

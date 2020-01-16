@@ -50,6 +50,7 @@ import com.netflix.conductor.core.execution.tasks.SubWorkflow;
 import com.netflix.conductor.core.execution.tasks.WorkflowSystemTask;
 import com.netflix.conductor.core.metadata.MetadataMapperService;
 import com.netflix.conductor.core.orchestration.ExecutionDAOFacade;
+import com.netflix.conductor.core.scripting.ScriptEvaluator;
 import com.netflix.conductor.core.utils.IDGenerator;
 import com.netflix.conductor.core.utils.QueueUtils;
 import com.netflix.conductor.dao.MetadataDAO;
@@ -82,6 +83,7 @@ public class WorkflowExecutor {
     private final MetadataDAO metadataDAO;
     private final QueueDAO queueDAO;
     private final DeciderService deciderService;
+    private final ScriptEvaluator scriptEvaluator;
     private final Configuration config;
     private final MetadataMapperService metadataMapperService;
     private final ExecutionDAOFacade executionDAOFacade;
@@ -102,9 +104,11 @@ public class WorkflowExecutor {
             WorkflowStatusListener workflowStatusListener,
             ExecutionDAOFacade executionDAOFacade,
             Configuration config,
-            ExecutionLockService executionLockService
+            ExecutionLockService executionLockService,
+            ScriptEvaluator scriptEvaluator
     ) {
         this.deciderService = deciderService;
+        this.scriptEvaluator = scriptEvaluator;
         this.metadataDAO = metadataDAO;
         this.queueDAO = queueDAO;
         this.config = config;
@@ -933,6 +937,10 @@ public class WorkflowExecutor {
 
     public List<String> getRunningWorkflowIds(String workflowName, int version) {
         return executionDAOFacade.getRunningWorkflowIds(workflowName, version);
+    }
+
+    public ScriptEvaluator getScriptEvaluator() {
+        return scriptEvaluator;
     }
 
     /**

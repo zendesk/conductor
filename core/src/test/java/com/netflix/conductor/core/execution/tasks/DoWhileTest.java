@@ -28,6 +28,7 @@ import com.netflix.conductor.core.execution.WorkflowExecutor;
 import com.netflix.conductor.core.execution.WorkflowStatusListener;
 import com.netflix.conductor.core.metadata.MetadataMapperService;
 import com.netflix.conductor.core.orchestration.ExecutionDAOFacade;
+import com.netflix.conductor.core.scripting.ScriptEvaluatorUtils;
 import com.netflix.conductor.dao.MetadataDAO;
 import com.netflix.conductor.dao.QueueDAO;
 import java.util.Arrays;
@@ -79,7 +80,7 @@ public class DoWhileTest {
         executionLockService = Mockito.mock(ExecutionLockService.class);
         config = Mockito.mock(Configuration.class);
         provider = spy(new WorkflowExecutor(deciderService, metadataDAO, queueDAO, metadataMapperService,
-                workflowStatusListener, executionDAOFacade, config, executionLockService));
+                workflowStatusListener, executionDAOFacade, config, executionLockService, ScriptEvaluatorUtils.create()));
         loopWorkflowTask1 = new WorkflowTask();
         loopWorkflowTask1.setTaskReferenceName("task1__1");
         loopWorkflowTask1.setName("task1__1");

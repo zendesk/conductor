@@ -13,7 +13,7 @@
 package com.netflix.conductor.core.config;
 
 import com.google.inject.AbstractModule;
-
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -288,12 +288,11 @@ public interface Configuration {
 	 */
 	Long getMaxTaskOutputPayloadSizeThresholdKB();
 
+  enum DB {
+      REDIS, DYNOMITE, MEMORY, REDIS_CLUSTER, MYSQL, POSTGRES, CASSANDRA, REDIS_SENTINEL
+  }
 
-    enum DB {
-        REDIS, DYNOMITE, MEMORY, REDIS_CLUSTER, MYSQL, POSTGRES, CASSANDRA, REDIS_SENTINEL
-    }
-
-    enum LOCKING_SERVER {
-        NOOP_LOCK, REDIS, ZOOKEEPER
-    }
+  enum LOCKING_SERVER {
+      NOOP_LOCK, REDIS, ZOOKEEPER
+  }
 }

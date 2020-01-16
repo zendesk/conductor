@@ -54,6 +54,7 @@ import com.netflix.conductor.core.execution.tasks.SubWorkflow;
 import com.netflix.conductor.core.execution.tasks.SystemTaskWorkerCoordinator;
 import com.netflix.conductor.core.execution.tasks.Terminate;
 import com.netflix.conductor.core.execution.tasks.Wait;
+import com.netflix.conductor.core.scripting.ScriptEvaluator;
 import com.netflix.conductor.core.utils.JsonUtils;
 import com.netflix.conductor.dao.MetadataDAO;
 import com.netflix.conductor.dao.QueueDAO;
@@ -122,8 +123,8 @@ public class CoreModule extends AbstractModule {
     @StringMapKey(TASK_TYPE_DECISION)
     @Singleton
     @Named(TASK_MAPPERS_QUALIFIER)
-    public TaskMapper getDecisionTaskMapper() {
-        return new DecisionTaskMapper();
+    public TaskMapper getDecisionTaskMapper(ScriptEvaluator scriptEvaluator) {
+        return new DecisionTaskMapper(scriptEvaluator);
     }
 
     @ProvidesIntoMap

@@ -67,6 +67,7 @@ import com.netflix.conductor.core.execution.tasks.Wait;
 import com.netflix.conductor.core.execution.tasks.WorkflowSystemTask;
 import com.netflix.conductor.core.metadata.MetadataMapperService;
 import com.netflix.conductor.core.orchestration.ExecutionDAOFacade;
+import com.netflix.conductor.core.scripting.ScriptEvaluatorUtils;
 import com.netflix.conductor.core.utils.ExternalPayloadStorageUtils;
 import com.netflix.conductor.core.utils.IDGenerator;
 import com.netflix.conductor.dao.MetadataDAO;
@@ -114,7 +115,7 @@ public class TestWorkflowExecutor {
         ObjectMapper objectMapper = new JsonMapperProvider().get();
         ParametersUtils parametersUtils = new ParametersUtils();
         Map<String, TaskMapper> taskMappers = new HashMap<>();
-        taskMappers.put("DECISION", new DecisionTaskMapper());
+        taskMappers.put("DECISION", new DecisionTaskMapper(ScriptEvaluatorUtils.create()));
         taskMappers.put("DYNAMIC", new DynamicTaskMapper(parametersUtils, metadataDAO));
         taskMappers.put("FORK_JOIN", new ForkJoinTaskMapper());
         taskMappers.put("JOIN", new JoinTaskMapper());
@@ -129,7 +130,8 @@ public class TestWorkflowExecutor {
 
         DeciderService deciderService = new DeciderService(parametersUtils, metadataDAO, externalPayloadStorageUtils, taskMappers, config);
         MetadataMapperService metadataMapperService = new MetadataMapperService(metadataDAO);
-        workflowExecutor = new WorkflowExecutor(deciderService, metadataDAO, queueDAO, metadataMapperService, workflowStatusListener, executionDAOFacade, config, executionLockService);
+        workflowExecutor = new WorkflowExecutor(deciderService, metadataDAO, queueDAO, metadataMapperService, workflowStatusListener,
+            executionDAOFacade, config, executionLockService, ScriptEvaluatorUtils.create());
     }
 
     @Test

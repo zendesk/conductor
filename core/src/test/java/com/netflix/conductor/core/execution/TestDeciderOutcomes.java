@@ -47,6 +47,7 @@ import com.netflix.conductor.core.execution.mapper.TaskMapper;
 import com.netflix.conductor.core.execution.mapper.UserDefinedTaskMapper;
 import com.netflix.conductor.core.execution.mapper.WaitTaskMapper;
 import com.netflix.conductor.core.execution.tasks.Join;
+import com.netflix.conductor.core.scripting.ScriptEvaluatorUtils;
 import com.netflix.conductor.core.utils.ExternalPayloadStorageUtils;
 import com.netflix.conductor.dao.MetadataDAO;
 import java.io.InputStream;
@@ -92,7 +93,7 @@ public class TestDeciderOutcomes {
         when(metadataDAO.getTaskDef(anyString())).thenReturn(taskDef);
         ParametersUtils parametersUtils = new ParametersUtils();
         Map<String, TaskMapper> taskMappers = new HashMap<>();
-        taskMappers.put("DECISION", new DecisionTaskMapper());
+        taskMappers.put("DECISION", new DecisionTaskMapper(ScriptEvaluatorUtils.create()));
         taskMappers.put("DYNAMIC", new DynamicTaskMapper(parametersUtils, metadataDAO));
         taskMappers.put("FORK_JOIN", new ForkJoinTaskMapper());
         taskMappers.put("JOIN", new JoinTaskMapper());

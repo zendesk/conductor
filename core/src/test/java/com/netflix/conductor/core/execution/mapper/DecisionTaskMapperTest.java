@@ -9,6 +9,7 @@ import com.netflix.conductor.common.run.Workflow;
 import com.netflix.conductor.core.execution.DeciderService;
 import com.netflix.conductor.core.execution.ParametersUtils;
 import com.netflix.conductor.core.execution.TerminateWorkflowException;
+import com.netflix.conductor.core.scripting.ScriptEvaluatorUtils;
 import com.netflix.conductor.core.utils.IDGenerator;
 import org.junit.Before;
 import org.junit.Rule;
@@ -65,7 +66,7 @@ public class DecisionTaskMapperTest {
         task3.setInputParameters(ip1);
         task3.setTaskReferenceName("t3");
         deciderService = mock(DeciderService.class);
-        decisionTaskMapper = new DecisionTaskMapper();
+        decisionTaskMapper = new DecisionTaskMapper(ScriptEvaluatorUtils.create());
     }
 
     @Test

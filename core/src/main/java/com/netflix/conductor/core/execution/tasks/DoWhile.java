@@ -24,9 +24,9 @@ import com.netflix.conductor.common.metadata.tasks.Task.Status;
 import com.netflix.conductor.common.metadata.tasks.TaskDef;
 import com.netflix.conductor.common.run.Workflow;
 import com.netflix.conductor.common.utils.TaskUtils;
-import com.netflix.conductor.core.events.ScriptEvaluator;
 import com.netflix.conductor.core.execution.ParametersUtils;
 import com.netflix.conductor.core.execution.WorkflowExecutor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,7 +139,7 @@ public class DoWhile extends WorkflowSystemTask {
 		if (condition != null) {
 			logger.debug("Condition {} is being evaluated{}", condition);
 			//Evaluate the expression by using the Nashhorn based script evaluator
-			shouldContinue = ScriptEvaluator.evalBool(condition, taskInput);
+			shouldContinue = workflowExecutor.getScriptEvaluator().evalBool(condition, taskInput);
 		}
 		return shouldContinue;
 	}

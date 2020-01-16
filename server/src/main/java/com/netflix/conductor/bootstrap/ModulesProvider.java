@@ -25,6 +25,7 @@ import com.netflix.conductor.contribs.kafka.KafkaProducerManager;
 import com.netflix.conductor.contribs.kafka.KafkaPublishTask;
 import com.netflix.conductor.core.config.Configuration;
 import com.netflix.conductor.core.config.JacksonModule;
+import com.netflix.conductor.core.scripting.GraalScriptingModule;
 import com.netflix.conductor.core.utils.NoopLockModule;
 import com.netflix.conductor.core.execution.WorkflowExecutorModule;
 import com.netflix.conductor.core.utils.DummyPayloadStorage;
@@ -80,6 +81,7 @@ public class ModulesProvider implements Provider<List<AbstractModule>> {
 
         // Load Jackson module early to make ObjectMapper provider available across all the usages.
         modules.add(new JacksonModule());
+        modules.add(new GraalScriptingModule());
 
         try {
             database = configuration.getDB();

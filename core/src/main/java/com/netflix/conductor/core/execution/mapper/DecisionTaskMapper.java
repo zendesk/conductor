@@ -22,9 +22,10 @@ import com.netflix.conductor.common.metadata.workflow.TaskType;
 import com.netflix.conductor.common.metadata.workflow.WorkflowDef;
 import com.netflix.conductor.common.metadata.workflow.WorkflowTask;
 import com.netflix.conductor.common.run.Workflow;
-import com.netflix.conductor.core.events.ScriptEvaluator;
 import com.netflix.conductor.core.execution.SystemTaskType;
 import com.netflix.conductor.core.execution.TerminateWorkflowException;
+import com.netflix.conductor.core.scripting.ScriptEvaluator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +44,12 @@ import java.util.Map;
 public class DecisionTaskMapper implements TaskMapper {
 
     private static final Logger logger = LoggerFactory.getLogger(DecisionTaskMapper.class);
+
+    private final ScriptEvaluator scriptEvaluator;
+
+    public DecisionTaskMapper(ScriptEvaluator scriptEvaluator) {
+        this.scriptEvaluator = scriptEvaluator;
+    }
 
     /**
      * This method gets the list of tasks that need to scheduled when the the task to scheduled is of type {@link TaskType#DECISION}.
@@ -126,7 +133,7 @@ public class DecisionTaskMapper implements TaskMapper {
             logger.debug("Case being evaluated using decision expression: {}", expression);
             try {
                 //Evaluate the expression by using the Nashhorn based script evaluator
-                Object returnValue = ScriptEvaluator.eval(expression, taskInput);
+                Object returnValue = scriptEvaluator.eval(expression, taskInput);
                 caseValue = (returnValue == null) ? "null" : returnValue.toString();
             } catch (ScriptException e) {
                 String errorMsg = String.format("Error while evaluating script: %s", expression);

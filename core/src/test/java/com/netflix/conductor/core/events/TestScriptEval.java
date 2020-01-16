@@ -20,6 +20,8 @@ package com.netflix.conductor.core.events;
 
 import static org.junit.Assert.*;
 
+import com.netflix.conductor.core.scripting.ScriptEvaluator;
+import com.netflix.conductor.core.scripting.ScriptEvaluatorUtils;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,11 +49,11 @@ public class TestScriptEval {
 		String script2 = "$.version > 3";					//false
 		String script3 = "$.oss";							//true
 		String script4 = "$.author == 'me'";				//false
-		
-		assertTrue(ScriptEvaluator.evalBool(script1, payload));
-		assertFalse(ScriptEvaluator.evalBool(script2, payload));
-		assertTrue(ScriptEvaluator.evalBool(script3, payload));
-		assertFalse(ScriptEvaluator.evalBool(script4, payload));
+		final ScriptEvaluator evaluator = ScriptEvaluatorUtils.create();
+		assertTrue(evaluator.evalBool(script1, payload));
+		assertFalse(evaluator.evalBool(script2, payload));
+		assertTrue(evaluator.evalBool(script3, payload));
+		assertFalse(evaluator.evalBool(script4, payload));
 		
 	}
 }

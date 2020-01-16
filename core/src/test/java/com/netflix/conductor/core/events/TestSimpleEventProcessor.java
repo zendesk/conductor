@@ -33,6 +33,8 @@ import com.netflix.conductor.core.execution.ApplicationException;
 import com.netflix.conductor.core.execution.ParametersUtils;
 import com.netflix.conductor.core.execution.TestConfiguration;
 import com.netflix.conductor.core.execution.WorkflowExecutor;
+import com.netflix.conductor.core.scripting.ScriptEvaluatorUtils;
+import com.netflix.conductor.core.scripting.ScriptEvaluator;
 import com.netflix.conductor.core.utils.JsonUtils;
 import com.netflix.conductor.service.ExecutionService;
 import com.netflix.conductor.service.MetadataService;
@@ -79,6 +81,7 @@ public class TestSimpleEventProcessor {
     private ParametersUtils parametersUtils;
     private JsonUtils jsonUtils;
     private ObjectMapper objectMapper = new JsonMapperProvider().get();
+    private ScriptEvaluator scriptEvaluator = ScriptEvaluatorUtils.create();
 
     @Before
     public void setup() {
@@ -167,8 +170,8 @@ public class TestSimpleEventProcessor {
         when(metadataService.getWorkflowDef(any(), any())).thenReturn(workflowDef);
 
         SimpleActionProcessor actionProcessor = new SimpleActionProcessor(workflowExecutor, parametersUtils, jsonUtils);
-
-        SimpleEventProcessor eventProcessor = new SimpleEventProcessor(executionService, metadataService, actionProcessor, eventQueues, jsonUtils, new TestConfiguration(), objectMapper);
+        ScriptEvaluator evaluator = ScriptEvaluatorUtils.create();
+        SimpleEventProcessor eventProcessor = new SimpleEventProcessor(executionService, metadataService, actionProcessor, eventQueues, evaluator, jsonUtils, new TestConfiguration(), objectMapper);
         assertNotNull(eventProcessor.getQueues());
         assertEquals(1, eventProcessor.getQueues().size());
 
@@ -227,7 +230,7 @@ public class TestSimpleEventProcessor {
 
         SimpleActionProcessor actionProcessor = new SimpleActionProcessor(workflowExecutor, parametersUtils, jsonUtils);
 
-        SimpleEventProcessor eventProcessor = new SimpleEventProcessor(executionService, metadataService, actionProcessor, eventQueues, jsonUtils, new TestConfiguration(), objectMapper);
+        SimpleEventProcessor eventProcessor = new SimpleEventProcessor(executionService, metadataService, actionProcessor, eventQueues, scriptEvaluator, jsonUtils, new TestConfiguration(), objectMapper);
         assertNotNull(eventProcessor.getQueues());
         assertEquals(1, eventProcessor.getQueues().size());
 
@@ -256,7 +259,7 @@ public class TestSimpleEventProcessor {
         when(executionService.addEventExecution(any())).thenReturn(true);
         when(actionProcessor.execute(any(), any(), any(), any())).thenThrow(new ApplicationException(ApplicationException.Code.BACKEND_ERROR, "some retriable error"));
 
-        SimpleEventProcessor eventProcessor = new SimpleEventProcessor(executionService, metadataService, actionProcessor, eventQueues, jsonUtils, new TestConfiguration(), objectMapper);
+        SimpleEventProcessor eventProcessor = new SimpleEventProcessor(executionService, metadataService, actionProcessor, eventQueues, scriptEvaluator, jsonUtils, new TestConfiguration(), objectMapper);
         assertNotNull(eventProcessor.getQueues());
         assertEquals(1, eventProcessor.getQueues().size());
 
@@ -287,7 +290,7 @@ public class TestSimpleEventProcessor {
 
         when(actionProcessor.execute(any(), any(), any(), any())).thenThrow(new ApplicationException(ApplicationException.Code.INVALID_INPUT, "some non-retriable error"));
 
-        SimpleEventProcessor eventProcessor = new SimpleEventProcessor(executionService, metadataService, actionProcessor, eventQueues, jsonUtils, new TestConfiguration(), objectMapper);
+        SimpleEventProcessor eventProcessor = new SimpleEventProcessor(executionService, metadataService, actionProcessor, eventQueues, scriptEvaluator, jsonUtils, new TestConfiguration(), objectMapper);
         assertNotNull(eventProcessor.getQueues());
         assertEquals(1, eventProcessor.getQueues().size());
 
@@ -306,7 +309,7 @@ public class TestSimpleEventProcessor {
             throw new UnsupportedOperationException("error");
         }).when(actionProcessor).execute(any(), any(), any(), any());
 
-        SimpleEventProcessor eventProcessor = new SimpleEventProcessor(executionService, metadataService, actionProcessor, eventQueues, jsonUtils, new TestConfiguration(), objectMapper);
+        SimpleEventProcessor eventProcessor = new SimpleEventProcessor(executionService, metadataService, actionProcessor, eventQueues, scriptEvaluator, jsonUtils, new TestConfiguration(), objectMapper);
         EventExecution eventExecution = new EventExecution("id", "messageId");
         eventExecution.setStatus(EventExecution.Status.IN_PROGRESS);
         eventExecution.setEvent("event");
@@ -326,7 +329,7 @@ public class TestSimpleEventProcessor {
             throw new ApplicationException(ApplicationException.Code.INVALID_INPUT, "some non-retriable error");
         }).when(actionProcessor).execute(any(), any(), any(), any());
 
-        SimpleEventProcessor eventProcessor = new SimpleEventProcessor(executionService, metadataService, actionProcessor, eventQueues, jsonUtils, new TestConfiguration(), objectMapper);
+        SimpleEventProcessor eventProcessor = new SimpleEventProcessor(executionService, metadataService, actionProcessor, eventQueues, scriptEvaluator, jsonUtils, new TestConfiguration(), objectMapper);
         EventExecution eventExecution = new EventExecution("id", "messageId");
         eventExecution.setStatus(EventExecution.Status.IN_PROGRESS);
         eventExecution.setEvent("event");
@@ -347,7 +350,7 @@ public class TestSimpleEventProcessor {
             throw new ApplicationException(ApplicationException.Code.BACKEND_ERROR, "some retriable error");
         }).when(actionProcessor).execute(any(), any(), any(), any());
 
-        SimpleEventProcessor eventProcessor = new SimpleEventProcessor(executionService, metadataService, actionProcessor, eventQueues, jsonUtils, new TestConfiguration(), objectMapper);
+        SimpleEventProcessor eventProcessor = new SimpleEventProcessor(executionService, metadataService, actionProcessor, eventQueues, scriptEvaluator, jsonUtils, new TestConfiguration(), objectMapper);
         EventExecution eventExecution = new EventExecution("id", "messageId");
         eventExecution.setStatus(EventExecution.Status.IN_PROGRESS);
         eventExecution.setEvent("event");
